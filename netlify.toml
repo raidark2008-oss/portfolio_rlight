@@ -1,0 +1,3 @@
+[build]
+  publish = "portfolio_rlight"
+  functions = "netlify/functions"
