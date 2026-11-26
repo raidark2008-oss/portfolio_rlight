@@ -15,8 +15,58 @@
 
     <!-- Stylesheet Utama -->
     <link rel="stylesheet" href="css/style.css">
+
+    <!-- Sinkronisasi Awal Transisi Masuk dari firstscreen.html (Mencegah Kedipan) -->
+    <script>
+        (function () {
+            const root = document.documentElement;
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const fromIntroParam = params.get('entered') === '1';
+                const themeParam = params.get('theme');
+
+                let fromIntroSession = false;
+                let savedTheme = null;
+                try {
+                    const enteredAt = Number(sessionStorage.getItem('relight_intro_entered') || '0');
+                    if (enteredAt && Date.now() - enteredAt < 15000) {
+                        fromIntroSession = true;
+                    }
+                    savedTheme = sessionStorage.getItem('relight_theme');
+                    sessionStorage.removeItem('relight_intro_entered');
+                } catch (e) {
+                    // Abaikan jika sessionStorage tidak dapat diakses
+                }
+
+                const activeTheme = themeParam || savedTheme;
+                if (activeTheme && ['tungsten', 'studio', 'noir'].includes(activeTheme)) {
+                    root.setAttribute('data-arrived-theme', activeTheme);
+                }
+
+                if (fromIntroParam || fromIntroSession) {
+                    root.classList.add('intro-arriving');
+                } else {
+                    root.classList.add('direct-arriving');
+                }
+
+                if (fromIntroParam || themeParam) {
+                    try {
+                        const cleanUrl = window.location.pathname + window.location.hash;
+                        window.history.replaceState(null, '', cleanUrl);
+                    } catch (e) {
+                        // Abaikan jika browser membatasi replaceState pada file://
+                    }
+                }
+            } catch (e) {
+                root.classList.add('direct-arriving');
+            }
+        })();
+    </script>
 </head>
 <body data-lighting="tungsten">
+
+    <!-- Tirai Kedatangan Smooth dari Tampilan Awal -->
+    <div class="page-arrival-veil" id="pageArrivalVeil" aria-hidden="true"></div>
 
     <!-- Motion Graphic: Garis Progres Tinta Scroll di Puncak Layar -->
     <div class="scroll-progress-bar" id="scrollProgressBar"></div>
@@ -32,7 +82,7 @@
     <!-- HEADER / MASTHEAD UTAMA                                              -->
     <!-- ==================================================================== -->
     <header class="masthead">
-        <div class="masthead-inner">
+        <div class="masthead-inner enter-stagger enter-from-top" style="--enter-order: 0;">
             <a class="brand-link" onclick="scrollToSection('hero-section')">
                 <span class="brand-lamp"></span>
                 <span class="brand-title" id="brandTitleDisplay">Re-Light</span>
@@ -66,8 +116,8 @@
         <!-- ================================================================ -->
         <!-- 1. HERO SECTION (DENGAN MOTION GRAPHIC SVG TULISAN TANGAN)       -->
         <!-- ================================================================ -->
-        <section class="hero reveal-on-scroll" id="hero-section">
-            <div class="hero-top-row">
+        <section class="hero" id="hero-section">
+            <div class="hero-top-row enter-stagger" style="--enter-order: 1;">
                 <div class="hero-meta">
                     <span id="heroMetaDisplay">Arsip Visual & Eksplorasi Digital</span>
                     <span>•</span>
@@ -91,7 +141,7 @@
                 </div>
             </div>
             
-            <h1 class="hero-title">
+            <h1 class="hero-title enter-stagger" style="--enter-order: 2;">
                 <span id="heroHeadingMain">Ulangi, definisikan, dan</span>
                 <span class="hero-emphasis-wrap">
                     <em id="heroHeadingEm">perbaiki cahaya.</em>
@@ -103,7 +153,7 @@
                 </span>
             </h1>
 
-            <div class="hero-sub">
+            <div class="hero-sub enter-stagger" style="--enter-order: 3;">
                 <div>
                     <p class="hero-desc" id="heroDescDisplay">
                         Sebuah kurasi karya santai tanpa pretensi. Merangkum eksplorasi desain visual, coretan sketsa lepas, dan fragmen fotografi jalanan yang sempat tercecer di folder-folder tak bernama.
@@ -133,7 +183,7 @@
         </section>
 
         <!-- Motion Graphic: Pita Teks Berjalan Kinetik (Kinetic Ribbon) -->
-        <div class="motion-marquee" aria-hidden="true">
+        <div class="motion-marquee enter-stagger" style="--enter-order: 4;" aria-hidden="true">
             <div class="marquee-track">
                 <span><svg class="marquee-star" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="currentColor"/></svg> RE-LIGHT STUDIO</span>
                 <span><svg class="marquee-star" viewBox="0 0 24 24"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="currentColor"/></svg> ASAL CORET</span>
@@ -154,7 +204,7 @@
         <!-- ================================================================ -->
         <!-- 2. TOOLBAR & FILTER PAMERAN                                      -->
         <!-- ================================================================ -->
-        <section class="exhibition-toolbar">
+        <section class="exhibition-toolbar enter-stagger" style="--enter-order: 5;">
             <div class="filter-group">
                 <button type="button" class="filter-pill active" data-category="all" onclick="filterCatalog('all', this)">
                     Semua Karya <span class="filter-count" id="countAll">0</span>
@@ -647,5 +697,15 @@
 
     <!-- Mesin Logika Utama & Motion Graphics Website -->
     <script src="js/main.js"></script>
+
+    <!-- Tutorial Interaktif: Lumi Si Pemandu Cahaya -->
+    <script src="js/tutorial.js"></script>
+
+    <!-- Tombol FAB Lumi: Replay Tutorial -->
+    <button type="button" class="tutorial-fab" id="tutorialFab" title="Tutorial Lumi ✨" onclick="replayTutorial()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"/>
+        </svg>
+    </button>
 </body>
 </html>

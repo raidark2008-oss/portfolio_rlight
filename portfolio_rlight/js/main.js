@@ -47,6 +47,11 @@ let particleRgb = '242, 154, 82';
 
 // Inisialisasi Aplikasi saat Dokumen Siap
 document.addEventListener('DOMContentLoaded', () => {
+    const arrivedTheme = document.documentElement.getAttribute('data-arrived-theme');
+    if (arrivedTheme && ['tungsten', 'studio', 'noir'].includes(arrivedTheme)) {
+        setLighting(arrivedTheme);
+    }
+
     siteData = loadAllCategorizedData();
     initSiteContent();
     initSketchCanvas();
@@ -57,6 +62,60 @@ document.addEventListener('DOMContentLoaded', () => {
     initMotionParticleCanvas();
     initCardMotionEffects();
     safeCreateIcons();
+    initPageEntrance();
+});
+
+/**
+ * Orkestrasi Animasi Masuk Smooth (Selaras dengan Transisi dari firstscreen.html)
+ */
+function initPageEntrance() {
+    const root = document.documentElement;
+    const veil = document.getElementById('pageArrivalVeil');
+    const isIntroArriving = root.classList.contains('intro-arriving');
+
+    const startReveal = () => {
+        if (root.classList.contains('is-entered')) return;
+        root.classList.add('is-entered');
+        if (veil && isIntroArriving) {
+            veil.classList.add('is-dissolving');
+            setTimeout(() => {
+                veil.classList.add('is-done');
+            }, 680);
+        } else if (veil) {
+            veil.classList.add('is-done');
+        }
+    };
+
+    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+        startReveal();
+        return;
+    }
+
+    // Tunggu 1 frame agar tata letak, fon, dan kanvas siap sebelum tirai terbuka mulus
+    window.requestAnimationFrame(() => {
+        setTimeout(startReveal, isIntroArriving ? 20 : 10);
+    });
+
+    // Pengaman agar halaman tidak pernah tertahan tersembunyi
+    setTimeout(startReveal, 1100);
+
+    // Tutorial Lumi: auto-start setelah animasi entrance selesai
+    const tutorialDelay = isIntroArriving ? 1600 : 800;
+    setTimeout(() => {
+        if (typeof window.initTutorialFab === 'function') window.initTutorialFab();
+        if (typeof window.tutorialShouldAutoStart === 'function' && window.tutorialShouldAutoStart()) {
+            window.startTutorial();
+        }
+    }, tutorialDelay);
+}
+
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        document.documentElement.classList.add('is-entered');
+        const veil = document.getElementById('pageArrivalVeil');
+        if (veil) veil.classList.add('is-done');
+    }
 });
 
 /**
@@ -1059,6 +1118,12 @@ function setLighting(theme, btnEl) {
     if (bSlider) bSlider.value = 65;
     setText('kelvinValueDisplay', preset.label);
     setText('beamValueDisplay', '65% (Sedang)');
+
+    try {
+        sessionStorage.setItem('relight_theme', theme);
+    } catch (e) {
+        // Abaikan jika sessionStorage tidak tersedia
+    }
 }
 
 function scrollToSection(sectionId, btnEl) {

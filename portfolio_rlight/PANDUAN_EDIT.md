@@ -9,7 +9,7 @@ Website ini sekarang telah dibagi menjadi **file-file khusus per kategori** di d
 Saat Anda membuka folder `website no AI` di VS Code, Anda akan melihat susunan berikut:
 
 ```text
-website no AI/
+portfolio_rlight/
 │
 ├── 📂 content/                      <-- ⭐️ BUKA FOLDER INI UNTUK MENGEDIT
 │   ├── 📄 1_teks_utama.js           <-- Edit Judul Besar, Tagline, Manifesto, & Footer
@@ -26,9 +26,31 @@ website no AI/
 │   ├── sketches/                    <-- Taruh gambar sketsa baru di sini
 │   └── profile/                     <-- Taruh foto profil Anda di sini
 │
-├── 📄 index.html                    <-- Halaman website (klik 2x untuk membuka di browser)
+├── 📄 firstscreen.html              <-- 🚪 HALAMAN INTRO (pintu masuk utama ke website!)
+├── 📄 index.html                    <-- Halaman portfolio utama (dari intro otomatis ke sini)
 └── 📄 PANDUAN_EDIT.md               <-- Panduan praktis ini
 ```
+
+---
+
+## 🚪 Halaman Intro (firstscreen.html)
+
+Website ini sekarang memiliki **halaman pembuka interaktif** (`firstscreen.html`) sebelum masuk ke portfolio utama.
+
+| File | Fungsi |
+|------|--------|
+| `firstscreen.html` | Pintu masuk: animasi bola lampu, tombol "Nyalakan Cahaya", pilihan tema |
+| `js/firstscreen.js` | Logika interaksi intro (tema, animasi, perpindahan halaman) |
+| `index.html` | Portfolio utama — menerima pengunjung dari intro dengan animasi masuk yang halus |
+
+**Cara membuka website:**
+👉 Buka **`firstscreen.html`** di browser (bukan `index.html` langsung).
+- Klik tombol **"Nyalakan Cahaya • Masuk"** atau tekan **Enter** untuk masuk ke portfolio.
+- Pilih tema cahaya (🟡 Tungsten / ⚪ Studio / ⚫ Noir) di pojok kiri atas sebelum masuk.
+
+**Ingin mengubah teks di halaman intro?**
+👉 Buka file: **`content/1_teks_utama.js`**
+- Teks tagline intro (`judulDepan`, `judulSorotan`, kutipan) dibaca otomatis dari file ini.
 
 ---
 
@@ -94,3 +116,4 @@ Pilih file sesuai kategorinya:
 2. **Bahasa Indonesia Jelas**: Semua nama variabel dan instruksi di setiap file menggunakan bahasa Indonesia yang mudah dipahami.
 3. **Aman dari Kerusakan**: Kode HTML (`index.html`) dan CSS (`style.css`) tidak akan tersentuh sama sekali, sehingga tata letak website dijamin tidak akan rusak atau berantakan saat Anda mengedit konten.
 4. **Fitur Simpan Otomatis di VS Code**: Pengaturan VS Code telah diaktifkan otomatis (`files.autoSave`), sehingga perubahan yang Anda ketik langsung tersimpan dengan rapi.
+5. **Halaman Intro Otomatis**: Tema yang Anda pilih di `firstscreen.html` (Tungsten/Studio/Noir) akan tersimpan dan diterapkan otomatis setiap kali Anda mengunjungi website, termasuk saat kembali ke halaman utama.
